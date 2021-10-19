@@ -1,102 +1,117 @@
-from playhouse.cockroachdb import CockroachDatabase, DatabaseProxy
 from decimal import Decimal
 from datetime import datetime
 
 from models import *
-
-cockroach_db = CockroachDatabase(
-    database='wholesale',
-    user='root',
-    sslmode='require',
-    sslrootcert='..\..\..\Softwares\cockroach\certs\ca.crt',
-    sslkey='..\..\..\Softwares\cockroach\certs\client.root.key',
-    sslcert='..\..\..\Softwares\cockroach\certs\client.root.crt',
-    port=26257,
-    host='localhost'
-)
-
-database.initialize(cockroach_db)
-
-def draft():
-    with database.atomic():
-            print("Connection is successfully established")
-            print("-------------------------------------")
-            Item.delete().where(Item.id > 2).execute()
-            query = Item.select()
-            res = database.execute(query)
-            print(res.fetchall())
-            print("-------------------------------------")
-            Item.create(id = 3, name = 'I3', price = Decimal(30))
-            query = Item.select()
-            res = database.execute(query)
-            print(res.fetchall())
-            print("-------------------------------------")
-            query = Item.select().where(Item.price > 10).order_by(Item.id)
-            res = database.execute(query)
-            print(res.fetchall())
+from transactions.base import BaseTransaction
 
 
-def create_order(cus, num_items, item_number, supplier_warehouse, quantity):
-    
-    # add order
-    order_id = District.get(District.id == cus[1]).next_o_id
-    is_local = list(map(lambda x: x == cus[0], supplier_warehouse))
-    
-    Order.create(
-        id = order_id, 
-        w_id = cus[0],
-        d_id = cus[1],
-        c_id = cus[2],
-        carrier_id = None,
-        ol_cnt = Decimal(num_items),
-        all_local = Decimal(all(is_local)),
-        entry_d = datetime.utcnow()
-    )
+class NewOrderTransaction(BaseTransaction):
+    def __init__(self, cus, num_items, item_number, supplier_warehouse, quantity):
+        self.__w_id = cus[0]
+        self.__d_id = cus[1]
+        self.__c_id = cus[2]
+        self.__num_items = num_items
+        self.__item_number = item_number
+        self.__supplier_warehouse = supplier_warehouse
+        self.__quantity = quantity
 
-    # update district
-    District.update(next_o_id = District.next_o_id + 1).where(District.id == cus[1]).execute()
 
-    for i in range(num_items):
-        stock = Stock.get(
-            Stock.w_id == supplier_warehouse[i], 
-            Stock.i_id == item_number[i]
+    def _execute_transaction(self):
+        warehouse = Warehouse.get_by_id(self.__w_id)
+        district = District.get_by_id((self.__w_id, self.__d_id))
+        customer = Customer.get_by_id((self.__w_id, self.__d_id, self.__c_id))
+
+        order_id = district.next_o_id
+        is_local = list(map(lambda x: x == self.__w_id, self.__supplier_warehouse))
+        all_is_local = all(is_local)
+        total_amount = 0
+        
+        order = self.__create_order(order_id, all_is_local)
+        self.__update_district(district)
+
+        print(f"Customer Info: ")
+        print(f"    Identifier: ({self.__w_id}, {self.__d_id}, {self.__c_id})")
+        print(f"    Lastname: {customer.last}")
+        print(f"    Credit: {customer.credit}")
+        print(f"    Discount: {customer.discount}")
+        print(f"Tax Rate: ")
+        print(f"    Warehouse: {warehouse.tax}")
+        print(f"    District: {district.tax}")
+        print(f"Order Info: ")
+        print(f"    Order ID: {order.id}")
+        print(f"    Entry Data: {order.entry_d}")
+        print(f"    Number of Items: {self.__num_items}")
+        print(f"Item Info: ")
+        
+        for i in range(self.__num_items):
+            
+            stock = Stock.get_by_id((self.__supplier_warehouse[i], self.__item_number[i]))
+            item = Item.get_by_id(self.__item_number[i])
+            
+            adjusted_qty = stock.quantity - self.__quantity[i]
+
+            self.__update_stock(i, stock, adjusted_qty, is_local[i])
+            orderline = self.__create_orderline(i, order_id, stock, item)
+
+            total_amount += orderline.amount
+
+            print(f"  --Item ID: {item.id}")
+            print(f"    Order ID: {item.name}")
+            print(f"    Supplier Warehouse: {self.__supplier_warehouse[i]}")
+            print(f"    Quantity: {self.__quantity[i]}")
+            print(f"    Item Amount: {orderline.amount}")
+            print(f"    Stock: {stock.quantity}")
+
+        total_amount = total_amount * (1 + warehouse.tax + district.tax) * (1 - customer.discount)
+        print(f"Total Amount: {total_amount}")
+
+
+    def __create_order(self, order_id, all_is_local):
+        order = Order.create(
+            id = order_id, 
+            w_id = self.__w_id,
+            d_id = self.__d_id,
+            c_id = self.__c_id,
+            carrier_id = None,
+            ol_cnt = Decimal(self.__num_items),
+            all_local = Decimal(all_is_local),
+            entry_d = datetime.utcnow()
         )
-        # update stock
-        update_stock(i, stock, quantity[i], is_local[i])
-        # create order_line
-        create_order_line(i, order_id, stock, cus, item_number[i], supplier_warehouse[i], quantity[i])
-
-
-def update_stock(i, stock, quantity_i, is_local_i):
-
-    adjusted_qty = stock.quantity - quantity_i
-
-    stock.update(
-        quantity = adjusted_qty if adjusted_qty >= 10 else adjusted_qty + 100,
-        ytd = stock.ytd + quantity_i,
-        order_cnt = stock.order_cnt + 1,
-        remote_cnt = stock.remote_cnt + is_local_i
-    ).execute()
-
-
-def create_order_line(i, order_id, stock, cus, item_number_i, supplier_warehouse_i, quantity_i):
+        return  order
     
-    item = Item.get(Item.id == item_number_i)
 
-    OrderLine.create(
-        number = i + 1,
-        o_id = order_id, 
-        w_id = cus[0],
-        d_id = cus[1],
-        i_id = item_number_i,
-        supply_w_id = supplier_warehouse_i,
-        quantity = quantity_i,
-        amount = quantity_i * item.price,
-        delivery_d = None,
-        dist_info = getattr(stock, f"dist_{cus[1]}")
-    )
+    def __update_district(self, district):
+        district.update(
+            next_o_id = district.next_o_id + 1
+        ).execute()
 
 
+    def __update_stock(self, i, stock, adjusted_qty, is_local_i):
+        stock.update(
+            quantity = adjusted_qty if adjusted_qty >= 10 else adjusted_qty + 100,
+            ytd = stock.ytd + self.__quantity[i],
+            order_cnt = stock.order_cnt + 1,
+            remote_cnt = stock.remote_cnt + is_local_i
+        ).execute()
+    
 
-with database.atomic():
-    create_order((1,1,1), 2, [1, 2], [1, 1], [5, 3])
+    def __create_orderline(self, i, order_id, stock, item):
+        orderline = Orderline.create(
+            number = i + 1,
+            w_id = self.__w_id,
+            d_id = self.__d_id,
+            o_id = order_id, 
+            i_id = self.__item_number[i],
+            supply_w_id = self.__supplier_warehouse[i],
+            quantity = self.__quantity[i],
+            amount = self.__quantity[i] * item.price,
+            delivery_d = None,
+            dist_info = getattr(stock, f"dist_{self.__d_id}")
+        )
+        return orderline
+
+
+
+# ### test
+# new_order = NewOrderTransaction((1,1,1), 2, [1, 2], [1, 1], [5, 3])
+# new_order.execute()

@@ -12,11 +12,11 @@ from models.base import BaseModel
 from models.item import Item
 
 
-class OrderLine(BaseModel):
+class Orderline(BaseModel):
     number = IntegerField(column_name="ol_number", null=False)
-    o_id = IntegerField(column_name="ol_o_id", null=False)
     w_id = IntegerField(column_name="ol_w_id", null=False)
     d_id = IntegerField(column_name="ol_d_id", null=False)
+    o_id = IntegerField(column_name="ol_o_id", null=False)
     i_id = ForeignKeyField(Item, backref="i_id", column_name="ol_i_id", null=False)
     delivery_d = DateTimeField(column_name="ol_delivery_d")
     amount = DecimalField(column_name="ol_amount", max_digits=6, decimal_places=2, null=False)
@@ -26,9 +26,8 @@ class OrderLine(BaseModel):
 
     class Meta:
         primary_key = CompositeKey(
-            "number", "o_id", "w_id", "d_id"
+            "number", "w_id", "d_id", "o_id"
         )
-        table_name = "orderline"
         constraints = [
             SQL(
                 "FOREIGN KEY (ol_w_id, ol_d_id, ol_o_id) "
