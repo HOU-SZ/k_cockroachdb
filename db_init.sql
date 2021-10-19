@@ -105,7 +105,7 @@ IMPORT INTO customer
 	) CSV DATA ('nodelocal://1/customer.csv');
 
 
-CREATE TABLE IF NOT EXISTS orders 
+CREATE TABLE IF NOT EXISTS "order"
 (
 	O_W_ID       INT,
 	O_D_ID       INT,
@@ -119,7 +119,7 @@ CREATE TABLE IF NOT EXISTS orders
 	FOREIGN KEY (O_W_ID, O_D_ID, O_C_ID) REFERENCES customer (C_W_ID, C_D_ID, C_ID)
 );
 
-IMPORT INTO orders 
+IMPORT INTO "order"
 (
 	O_W_ID,
 	O_D_ID,
@@ -225,8 +225,4 @@ IMPORT INTO stock
 	S_DIST_10,
 	S_DATA
 	) CSV DATA ('nodelocal://1/stock.csv');
-
-
-
-
 
