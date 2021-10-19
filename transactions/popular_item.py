@@ -30,10 +30,10 @@ class PopularItemTransaction(BaseTransaction):
             print(f"    Entry Dazte and Time: {x.entry_d}")
             print(
                 f"    Customer Name: {customer.first}, {customer.middle}, {customer.last}")
-            ix = OrderLine.select().where(
-                (OrderLine.o_id == x.id) & (OrderLine.d_id == self.__district_number) & (
-                    OrderLine.w_id == self.__warehouse_number)
-            ).order_by(OrderLine.quantity.desc())
+            ix = Orderline.select().where(
+                (Orderline.o_id == x.id) & (Orderline.d_id == self.__district_number) & (
+                    Orderline.w_id == self.__warehouse_number)
+            ).order_by(Orderline.quantity.desc())
             px = []
             max_quantity = ix[0].quantity
             for orderline in ix:

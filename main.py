@@ -19,14 +19,22 @@ cockroach_db = CockroachDatabase(
 database.initialize(cockroach_db)
 
 
-### test NewOrderTransaction
-new_order = NewOrderTransaction((1,1,1), 2, [1, 2], [1, 1], [5, 3])
+# test NewOrderTransaction
+new_order = NewOrderTransaction((1, 1, 1), 2, [1, 2], [1, 1], [5, 3])
 new_order.execute()
 
-### test DeliveryTransaction
+# test PaymentTransaction
+# payment = PaymentTransaction(1, 1, 1, 6)
+# payment.execute()
+
+# test DeliveryTransaction
 # delivery = DeliveryTransaction(1, 2)
 # delivery.execute()
 
-### test OrderStatusTransaction
+# test OrderStatusTransaction
 # order_status = OrderStatusTransaction((1,1,1))
 # order.execute()
+
+# test PopularItemTransaction
+# popular_item = PopularItemTransaction(1, 1, 20)
+# popular_item.execute()
