@@ -38,3 +38,7 @@ new_order.execute()
 # test PopularItemTransaction
 # popular_item = PopularItemTransaction(1, 1, 20)
 # popular_item.execute()
+
+# test TopBanlanceTransaction
+# top_customers = TopBanlanceTransaction()
+# top_customers.execute()
