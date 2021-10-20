@@ -3,6 +3,7 @@ from transactions.new_order import NewOrderTransaction
 from transactions.payment import PaymentTransaction
 from transactions.delivery import DeliveryTransaction
 from transactions.order_status import OrderStatusTransaction
+from transactions.stock_level import StockLevelTransaction
 from transactions.popular_item import PopularItemTransaction
 from transactions.top_banlance import TopBanlanceTransaction
 
@@ -12,6 +13,7 @@ __all__ = [
     "PaymentTransaction",
     "DeliveryTransaction",
     "OrderStatusTransaction",
+    "StockLevelTransaction",
     "PopularItemTransaction",
     "TopBanlanceTransaction"
 ]

@@ -57,7 +57,7 @@ class NewOrderTransaction(BaseTransaction):
 
             print(f"  --Item ID: {item.id}")
             print(f"    Order ID: {item.name}")
-            print(f"    Supplier Warehouse: {self.__supplier_warehouse[i]}")
+            print(f"    Supply Warehouse: {self.__supplier_warehouse[i]}")
             print(f"    Quantity: {self.__quantity[i]}")
             print(f"    Item Amount: {orderline.amount}")
             print(f"    Stock: {stock.quantity}")

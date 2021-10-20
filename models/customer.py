@@ -37,6 +37,15 @@ class Customer(BaseModel):
     delivery_cnt = IntegerField(column_name="c_delivery_cnt", null=False, default=0)
     data = CharField(column_name="c_data", max_length=500)
 
+    @property
+    def name(self):
+        if self.first and self.middle:
+            return f"{self.first} {self.middle} {self.last}"
+        elif self.first:
+            return f"{self.first} {self.last}"
+        else:
+            return f"{self.last}"
+
     class Meta:
         primary_key = CompositeKey("w_id", "d_id", "id")
         constraints = [
