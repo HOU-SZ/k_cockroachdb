@@ -6,7 +6,7 @@ from models import *
 from transactions import *
 
 cockroach_db = CockroachDatabase(
-    database='supplier',
+    database='wholesale',
     user='root',
     sslmode='require',
     sslrootcert='..\..\..\Softwares\cockroach\certs\ca.crt',
@@ -20,7 +20,7 @@ database.initialize(cockroach_db)
 
 
 # test NewOrderTransaction
-# new_order = NewOrderTransaction((1, 1, 1), 2, [1, 2], [1, 1], [5, 3])
+# new_order = NewOrderTransaction((1, 1, 1), 2, [3, 1], [1, 2], [3, 6])
 # new_order.execute()
 
 # test PaymentTransaction
@@ -28,7 +28,7 @@ database.initialize(cockroach_db)
 # payment.execute()
 
 # test DeliveryTransaction
-# delivery = DeliveryTransaction(1, 2)
+# delivery = DeliveryTransaction(1, 5)
 # delivery.execute()
 
 # test OrderStatusTransaction
@@ -46,3 +46,7 @@ database.initialize(cockroach_db)
 # test TopBanlanceTransaction
 # top_customers = TopBanlanceTransaction()
 # top_customers.execute()
+
+# test RelatedCustomerTransaction
+related_customer = RelatedCustomerTransaction((1, 1, 1))
+related_customer.execute()

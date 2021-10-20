@@ -26,18 +26,31 @@ class DeliveryTransaction(BaseTransaction):
             customer = Customer.get_by_id((self.__w_id, i, order.c_id))
 
             # update order
-            order.update(carrier_id = self.__carrier_id).execute()
+            Order.update(carrier_id = self.__carrier_id).where(
+                Order.id == order.id,
+                Order.w_id == order.w_id,
+                Order.d_id == order.d_id
+            ).execute()
 
             # update orderline
             for j in range(int(order.ol_cnt)):
-                orderline = Orderline.get_by_id((j+1, self.__w_id, i, order.id))
-                orderline.update(delivery_d = datetime.utcnow()).execute()
+                orderline = Orderline.get_by_id((j+1, self.__w_id, i, n))
                 total_amount += orderline.amount
             
+            Orderline.update(delivery_d = datetime.utcnow()).where(
+                Orderline.w_id == self.__w_id,
+                Orderline.d_id == i,
+                Orderline.o_id == n
+            ).execute()
+                
+            
             # update customer
-            customer.update(
+            Customer.update(
                 balance = customer.balance + total_amount, 
                 delivery_cnt = customer.delivery_cnt + 1
+            ).where(
+                Customer.id == customer.id,
+                Customer.w_id == customer.w_id,
+                Customer.d_id == customer.d_id
             ).execute()
-
 

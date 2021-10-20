@@ -6,6 +6,7 @@ from transactions.order_status import OrderStatusTransaction
 from transactions.stock_level import StockLevelTransaction
 from transactions.popular_item import PopularItemTransaction
 from transactions.top_banlance import TopBanlanceTransaction
+from transactions.related_customer import RelatedCustomerTransaction
 
 __all__ = [
     "BaseTransaction",
@@ -15,5 +16,6 @@ __all__ = [
     "OrderStatusTransaction",
     "StockLevelTransaction",
     "PopularItemTransaction",
-    "TopBanlanceTransaction"
+    "TopBanlanceTransaction",
+    "RelatedCustomerTransaction"
 ]

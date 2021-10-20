@@ -27,7 +27,7 @@ class NewOrderTransaction(BaseTransaction):
         total_amount = 0
         
         order = self.__create_order(order_id, all_is_local)
-        self.__update_district(district)
+        self.__update_district(order_id)
 
         print(f"Customer Info: ")
         print(f"    Identifier: ({self.__w_id}, {self.__d_id}, {self.__c_id})")
@@ -80,18 +80,24 @@ class NewOrderTransaction(BaseTransaction):
         return  order
     
 
-    def __update_district(self, district):
-        district.update(
-            next_o_id = district.next_o_id + 1
+    def __update_district(self, order_id):
+        District.update(
+            next_o_id = order_id + 1
+        ).where(
+            District.id == self.__d_id,
+            District.w_id == self.__w_id
         ).execute()
 
 
     def __update_stock(self, i, stock, adjusted_qty, is_local_i):
-        stock.update(
+        Stock.update(
             quantity = adjusted_qty if adjusted_qty >= 10 else adjusted_qty + 100,
             ytd = stock.ytd + self.__quantity[i],
             order_cnt = stock.order_cnt + 1,
             remote_cnt = stock.remote_cnt + is_local_i
+        ).where(
+            Stock.w_id == self.__supplier_warehouse[i], 
+            Stock.i_id == self.__item_number[i]
         ).execute()
     
 
