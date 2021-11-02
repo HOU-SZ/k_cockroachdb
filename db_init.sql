@@ -180,7 +180,7 @@ IMPORT INTO orderline
 	OL_SUPPLY_W_ID,
 	OL_QUANTITY,
 	OL_DIST_INFO
-	) CSV DATA ('nodelocal://1/orderline.csv') WITH nullif = 'null';
+	) CSV DATA ('nodelocal://1/order-line.csv') WITH nullif = 'null';
 
 
 

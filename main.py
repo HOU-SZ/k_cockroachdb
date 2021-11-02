@@ -1,6 +1,7 @@
 from playhouse.cockroachdb import CockroachDatabase, DatabaseProxy
 from decimal import Decimal
 from datetime import datetime
+import time
 
 from models import *
 from transactions import *
@@ -18,13 +19,13 @@ cockroach_db = CockroachDatabase(
 
 database.initialize(cockroach_db)
 
-
+start_time = time.time()
 # test NewOrderTransaction
 # new_order = NewOrderTransaction((1, 1, 1), 2, [3, 1], [1, 2], [3, 6])
 # new_order.execute()
 
 # test PaymentTransaction
-# payment = PaymentTransaction(1, 1, 1, 6)
+# payment = PaymentTransaction((1, 1, 1), 6)
 # payment.execute()
 
 # test DeliveryTransaction
@@ -50,3 +51,8 @@ database.initialize(cockroach_db)
 # test RelatedCustomerTransaction
 related_customer = RelatedCustomerTransaction((1, 1, 1))
 related_customer.execute()
+
+end_time = time.time()
+print(f"Run time: {end_time - start_time}\n")
+
+

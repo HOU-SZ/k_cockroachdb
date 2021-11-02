@@ -1,3 +1,5 @@
+from peewee import Tuple
+
 from models import *
 from transactions import BaseTransaction
 
@@ -8,72 +10,109 @@ class RelatedCustomerTransaction(BaseTransaction):
         self.__c_id = cus[2]
     
     def _execute_transaction(self):
-        customer = Customer.get_by_id((self.__w_id, self.__d_id, self.__c_id))
+        # customer = Customer.get_by_id((self.__w_id, self.__d_id, self.__c_id))
 
-        query = Order.select(Order.id).where(
-            Order.w_id == self.__w_id,
-            Order.d_id == self.__d_id,
-            Order.c_id == self.__c_id
-        )
+        orders = (
+            Order.select(Order.id.alias("id")).where(
+                Order.w_id == self.__w_id,
+                Order.d_id == self.__d_id,
+                Order.c_id == self.__c_id
+            )
+        ).cte("orders")
 
-        order_list = database.execute(query).fetchall()
-        item_list_all = []
+        orderlines = (
+            Orderline.select(
+                Orderline.o_id.alias("o_id"),
+                Orderline.i_id.alias("i_id")
+            ).distinct().join(
+                orders,
+                on = (
+                    (Orderline.w_id == self.__w_id) &
+                    (Orderline.d_id == self.__d_id) &
+                    (Orderline.o_id == orders.c.id)
+                )
+            )
+        ).cte("orderlines")
 
-        for i in order_list:
-            order_item_list = []
-            order_id = i[0]
-            order = Order.get_by_id((self.__w_id, self.__d_id, order_id))
-            for j in range(int(order.ol_cnt)):
-                orderline = Orderline.get_by_id((j+1, self.__w_id, self.__d_id, order_id))
-                item = Item.get_by_id(orderline.i_id)
-                order_item_list.append(item.id)
-            item_list_all.append(order_item_list)
+        orderlines_2 = orderlines.alias("orderlines_2")
 
-        query = Customer.select(
-            Customer.w_id, 
-            Customer.d_id, 
-            Customer.id, 
-            Order.id, 
-            Order.ol_cnt
+        item_pairs = (
+            orderlines.select(
+                orderlines.c.i_id.alias("i_id_1"),  
+                orderlines_2.c.i_id.alias("i_id_2")
+            ).join(
+                orderlines_2,
+                on = (
+                    orderlines_2.c.o_id == orderlines.c.o_id
+                )
+            ).where(
+                orderlines.c.i_id < orderlines_2.c.i_id
+            )
+        ).cte("item_pairs")
+
+
+        related_orderlines = (
+            Orderline.select(
+                Orderline.w_id.alias("w_id"),
+                Orderline.d_id.alias("d_id"),
+                Orderline.o_id.alias("o_id"),
+                Orderline.i_id.alias("i_id")
+            ).distinct().where(
+                (Orderline.w_id != self.__w_id) &
+                Orderline.i_id.in_(
+                    orderlines.select(
+                        orderlines.c.i_id
+                    ).distinct()
+                )
+            )
+        ).cte("related_orderlines")
+
+        related_orderlines_2 = related_orderlines.alias("related_orderlines_2")
+
+        related_customers = related_orderlines.select(
+            related_orderlines.c.w_id.alias("w_id"),
+            related_orderlines.c.d_id.alias("d_id"),
+            Order.c_id.alias("c_id")
+        ).distinct().join(
+            related_orderlines_2,
+            on = (
+                (related_orderlines_2.c.w_id == related_orderlines.c.w_id) &
+                (related_orderlines_2.c.d_id == related_orderlines.c.d_id) &
+                (related_orderlines_2.c.o_id == related_orderlines.c.o_id) &
+                (related_orderlines.c.i_id < related_orderlines_2.c.i_id)
+            )
         ).join(
-            Order, on = (
-                (Order.c_id == Customer.id) &
-                (Order.w_id == Customer.w_id) &
-                (Order.d_id == Customer.d_id)
+            Order,
+            on = (
+                (Order.w_id == related_orderlines.c.w_id) &
+                (Order.d_id == related_orderlines.c.d_id) &
+                (Order.id == related_orderlines.c.o_id)
             )
         ).where(
-            Customer.w_id != customer.w_id,
-            Order.ol_cnt > 1
+            Tuple(
+                related_orderlines.c.i_id,
+                related_orderlines_2.c.i_id
+            ).in_(
+                item_pairs.select(
+                    item_pairs.c.i_id_1,
+                    item_pairs.c.i_id_2,
+                )
+            )
+        ).order_by(
+            related_orderlines.c.w_id,
+            related_orderlines.c.d_id,
+            Order.c_id
+        ).with_cte(
+            orders,
+            orderlines,
+            orderlines_2,
+            item_pairs,
+            related_orderlines,
+            related_orderlines_2
         )
 
-        customer_list = database.execute(query).fetchall()
-        related_customer_list = []
-
-        for customer_order in customer_list:
-            if (customer_order[0], customer_order[1], customer_order[2]) in related_customer_list:
-                continue
-            order_item_list = []
-            for j in range(int(customer_order[4])):
-                orderline = Orderline.get_by_id((j+1, customer_order[0], customer_order[1], customer_order[3]))
-                item = Item.get_by_id(orderline.i_id)
-                order_item_list.append(item.id)
-            
-            related_flag = 0
-
-            for item_list in item_list_all:
-                num_related_item = 0
-                for order_item_id in order_item_list:
-                    num_related_item += 1 if order_item_id in item_list else 0
-                    if num_related_item >= 2:
-                        related_flag = 1
-                        break
-                if related_flag:
-                    break
-            
-            if related_flag:
-                related_customer_list.append((customer_order[0], customer_order[1], customer_order[2]))
+        related_customer_list = database.execute(related_customers).fetchall()
         
         print(f"Related Customers: ")
         for i in related_customer_list:
             print(f"    {i}") 
-

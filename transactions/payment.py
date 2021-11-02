@@ -7,10 +7,10 @@ from transactions.base import BaseTransaction
 
 
 class PaymentTransaction(BaseTransaction):
-    def __init__(self, w_id, d_id, id, payment):
-        self.__w_id = w_id
-        self.__d_id = d_id
-        self.__id = id
+    def __init__(self, cus, payment):
+        self.__w_id = cus[0]
+        self.__d_id = cus[1]
+        self.__id = cus[2]
         self.__payment = payment
 
     def _execute_transaction(self):
