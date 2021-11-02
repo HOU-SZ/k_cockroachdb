@@ -61,7 +61,7 @@ class PopularItemTransaction(BaseTransaction):
                 print(f"    Item Name: {item['item_name']}")
                 print(f"    Item Quantity: {item['item_quantity']}\n")
 
-        print(all_orders_items)
+        # print(all_orders_items)
 
         distinct_popular_items = []
         for popular_items in all_popular_items:
