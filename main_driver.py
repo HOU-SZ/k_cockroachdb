@@ -96,14 +96,14 @@ def main(client_number, workload_type):
                 d_id = int(line[2])
                 t = int(line[3])
                 limit = int(line[4])
-                transaction = StockLevelTransaction(w_id, d_id, t, l)
+                transaction = StockLevelTransaction(w_id, d_id, t, limit)
                 transaction.execute()
 
             elif x_type == "I":
                 w_id = int(line[1])
                 d_id = int(line[2])
                 limit = int(line[3])
-                transaction = PopularItemTransaction(w_id, d_id, l)
+                transaction = PopularItemTransaction(w_id, d_id, limit)
                 transaction.execute()
 
             elif x_type == "T":
@@ -114,8 +114,8 @@ def main(client_number, workload_type):
                 c_w_id = int(line[1])
                 c_d_id = int(line[2])
                 c_id = int(line[3])
-                # transaction = RelatedCustomerTransaction((c_w_id, c_d_id, c_id))
-                # transaction.execute()
+                transaction = RelatedCustomerTransaction((c_w_id, c_d_id, c_id))
+                transaction.execute()
             else:
                 raise Exception(
                     "Invalid transaction type: %s [If you can't see invalid type letter, this means there is one or more empty line(s) in your input.]" % x_type)
