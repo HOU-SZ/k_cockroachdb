@@ -187,8 +187,11 @@ def execute_client(client_number, workload_type):
                 #     (c_w_id, c_d_id, c_id))
                 # transaction.execute()
             else:
-                raise Exception(
+                print(
                     "Invalid transaction type: %s [If you can't see invalid type letter, this means there is one or more empty line(s) in your input.]" % x_type)
+                continue
+                # raise Exception(
+                #     "Invalid transaction type: %s [If you can't see invalid type letter, this means there is one or more empty line(s) in your input.]" % x_type)
 
             # latency_list.append(time.time() - start_time)
             # number_of_executed_trans += 1
