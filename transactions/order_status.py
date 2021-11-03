@@ -15,7 +15,7 @@ class OrderStatusTransaction(BaseTransaction):
             Order.d_id == self.__d_id, 
             Order.c_id == self.__c_id
         ).order_by(
-            Order.id.desc()
+            Order.entry_d.desc()
         ).limit(1).get()
 
         print(f"Customer Info: ")
@@ -27,8 +27,13 @@ class OrderStatusTransaction(BaseTransaction):
         print(f"    Carrier ID: {order.carrier_id}")
         print(f"Item Info: ")
 
-        for i in range(int(order.ol_cnt)):
-            orderline = Orderline.get_by_id((i+1, self.__w_id, self.__d_id, order.id))
+        orderlines = Orderline.select().where(
+            Orderline.w_id == self.__w_id,
+            Orderline.d_id == self.__d_id,
+            Orderline.o_id == order.id
+        )
+
+        for orderline in orderlines:
             print(f"  --Item ID: {orderline.i_id}")
             print(f"    Supply Warehouse: {orderline.supply_w_id}")
             print(f"    Quantity: {orderline.quantity}")

@@ -15,10 +15,17 @@ class BaseTransaction(ABC):
     #         execute_transaction, max_attempts=10
     #     )
 
-    @database.transaction()
-    def execute(self):
-        return self._execute_transaction()
+    
+    def execute(self, *args, **kwargs):
+        def thunk(db_ref):
+            return self._execute_transaction(*args, **kwargs)
+        return database.run_transaction(thunk, max_attempts=10)
+
+    # @database.transaction()
+    # def execute(self):
+    #     print(f"model: {type(database)}")
+    #     return self._execute_transaction()
 
     @abstractmethod
-    def _execute_transaction(self):
+    def _execute_transaction(self, *args, **kwargs):
         pass

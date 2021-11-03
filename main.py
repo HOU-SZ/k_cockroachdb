@@ -7,17 +7,21 @@ from models import *
 from transactions import *
 
 cockroach_db = CockroachDatabase(
-    database='wholesale',
+    database='supplier',
     user='root',
     sslmode='require',
     sslrootcert='..\..\..\Softwares\cockroach\certs\ca.crt',
     sslkey='..\..\..\Softwares\cockroach\certs\client.root.key',
     sslcert='..\..\..\Softwares\cockroach\certs\client.root.crt',
     port=26257,
-    host='localhost'
+    host='localhost',
+    autoconnect=False
 )
 
 database.initialize(cockroach_db)
+
+database.connect()
+
 
 start_time = time.time()
 # test NewOrderTransaction
@@ -33,8 +37,8 @@ start_time = time.time()
 # delivery.execute()
 
 # test OrderStatusTransaction
-# order_status = OrderStatusTransaction((1,1,1))
-# order_status.execute()
+order_status = OrderStatusTransaction((1,1,1))
+order_status.execute()
 
 # test StockLevelTransaction
 # stock_level = StockLevelTransaction(1, 1, 50, 5)
@@ -49,8 +53,8 @@ start_time = time.time()
 # top_customers.execute()
 
 # test RelatedCustomerTransaction
-related_customer = RelatedCustomerTransaction((1, 1, 1))
-related_customer.execute()
+# related_customer = RelatedCustomerTransaction((1, 1, 1))
+# related_customer.execute()
 
 end_time = time.time()
 print(f"Run time: {end_time - start_time}\n")
