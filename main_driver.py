@@ -5,6 +5,7 @@ import numpy as np
 from playhouse.cockroachdb import CockroachDatabase, DatabaseProxy
 from decimal import Decimal
 from datetime import datetime
+import logging
 
 from models import *
 from transactions import *
@@ -12,8 +13,11 @@ from transactions import *
 import time
 import threading
 
+logging.basicConfig(filename='/temp/cs5424_team_k/cockroach-v21.1.7.linux-amd64/task.log',
+                    level=logging.INFO, filemode='a')
 
-def main(client_number, workload_type):
+
+def execute_client(client_number, workload_type):
 
     cockroach_db = CockroachDatabase(
         database='wholesale',
@@ -65,65 +69,132 @@ def main(client_number, workload_type):
                     supplier_warehouse.append(int(item_info[1]))
                     quantity.append(int(item_info[2]))
                 # execute transaction:
-                transaction = NewOrderTransaction(
-                    (w_id, d_id, c_id), num_items, item_number, supplier_warehouse, quantity)
-                transaction.execute()
+                try:
+                    transaction = NewOrderTransaction(
+                        (w_id, d_id, c_id), num_items, item_number, supplier_warehouse, quantity)
+                    transaction.execute()
+                except:
+                    print('error'+str(line))
+                    logging.error(str(line))
+                finally:
+                    latency_list.append(time.time() - start_time)
 
             elif x_type == "P":
                 c_w_id = int(line[1])
                 c_d_id = int(line[2])
                 c_id = int(line[3])
                 payment_num = Decimal(line[4])
-                transaction = PaymentTransaction(
-                    (c_w_id, c_d_id, c_id), payment_num)
-                transaction.execute()
+                try:
+                    transaction = PaymentTransaction(
+                        (c_w_id, c_d_id, c_id), payment_num)
+                    transaction.execute()
+                except:
+                    print('error'+str(line))
+                    logging.error(str(line))
+                finally:
+                    latency_list.append(time.time() - start_time)
+                # transaction = PaymentTransaction(
+                #     (c_w_id, c_d_id, c_id), payment_num)
+                # transaction.execute()
 
             elif x_type == "D":
                 w_id = int(line[1])
                 carrier_id = int(line[2])
-                transaction = DeliveryTransaction(w_id, carrier_id)
-                transaction.execute()
+                try:
+                    transaction = DeliveryTransaction(w_id, carrier_id)
+                    transaction.execute()
+                except:
+                    print('error'+str(line))
+                    logging.error(str(line))
+                finally:
+                    latency_list.append(time.time() - start_time)
+                # transaction = DeliveryTransaction(w_id, carrier_id)
+                # transaction.execute()
 
             elif x_type == "O":
                 c_w_id = int(line[1])
                 c_d_id = int(line[2])
                 c_id = int(line[3])
-                transaction = OrderStatusTransaction((c_w_id, c_d_id, c_id))
-                transaction.execute()
+                try:
+                    transaction = OrderStatusTransaction(
+                        (c_w_id, c_d_id, c_id))
+                    transaction.execute()
+                except:
+                    print('error'+str(line))
+                    logging.error(str(line))
+                finally:
+                    latency_list.append(time.time() - start_time)
+                # transaction = OrderStatusTransaction((c_w_id, c_d_id, c_id))
+                # transaction.execute()
 
             elif x_type == "S":
                 w_id = int(line[1])
                 d_id = int(line[2])
                 t = int(line[3])
                 limit = int(line[4])
-                transaction = StockLevelTransaction(w_id, d_id, t, limit)
-                transaction.execute()
+                try:
+                    transaction = StockLevelTransaction(w_id, d_id, t, limit)
+                    transaction.execute()
+                except:
+                    print('error'+str(line))
+                    logging.error(str(line))
+                finally:
+                    latency_list.append(time.time() - start_time)
+                # transaction = StockLevelTransaction(w_id, d_id, t, limit)
+                # transaction.execute()
 
             elif x_type == "I":
                 w_id = int(line[1])
                 d_id = int(line[2])
                 limit = int(line[3])
-                transaction = PopularItemTransaction(w_id, d_id, limit)
-                transaction.execute()
+                try:
+                    transaction = PopularItemTransaction(w_id, d_id, limit)
+                    transaction.execute()
+                except:
+                    print('error'+str(line))
+                    logging.error(str(line))
+                finally:
+                    latency_list.append(time.time() - start_time)
+                # transaction = PopularItemTransaction(w_id, d_id, limit)
+                # transaction.execute()
 
             elif x_type == "T":
-                transaction = TopBanlanceTransaction()
-                transaction.execute()
+                try:
+                    transaction = TopBanlanceTransaction()
+                    transaction.execute()
+                except:
+                    print('error'+str(line))
+                    logging.error(str(line))
+                finally:
+                    latency_list.append(time.time() - start_time)
+                # transaction = TopBanlanceTransaction()
+                # transaction.execute()
 
             elif x_type == "R":
                 c_w_id = int(line[1])
                 c_d_id = int(line[2])
                 c_id = int(line[3])
-                transaction = RelatedCustomerTransaction((c_w_id, c_d_id, c_id))
-                transaction.execute()
+                try:
+                    transaction = RelatedCustomerTransaction(
+                        (c_w_id, c_d_id, c_id))
+                    transaction.execute()
+                except:
+                    print('error'+str(line))
+                    logging.error(str(line))
+                finally:
+                    latency_list.append(time.time() - start_time)
+                # transaction = RelatedCustomerTransaction(
+                #     (c_w_id, c_d_id, c_id))
+                # transaction.execute()
             else:
                 raise Exception(
                     "Invalid transaction type: %s [If you can't see invalid type letter, this means there is one or more empty line(s) in your input.]" % x_type)
 
-            latency_list.append(time.time() - start_time)
-            number_of_executed_trans += 1
+            # latency_list.append(time.time() - start_time)
+            # number_of_executed_trans += 1
 
     # 7 measurements
+    number_of_executed_trans = len(latency_list)
     latency_array = np.array(latency_list)
     total_latency = np.sum(latency_array)  # sec
     throughput = number_of_executed_trans / total_latency
@@ -132,15 +203,19 @@ def main(client_number, workload_type):
     percentile_95 = np.percentile(latency_array, 95) * 1000
     percentile_99 = np.percentile(latency_array, 99) * 1000
 
-    result = [sys.argv[1], number_of_executed_trans, total_latency,
+    result = [client_number, number_of_executed_trans, total_latency,
               throughput, avr_latency, median_latency, percentile_95, percentile_99]
+    print(result)
+    output_string = ",".join([str(x) for x in result])
 
     with open('/temp/cs5424_team_k/cockroach/cockroach-v21.1.7.linux-amd64/task{}.csv'.format(sys.argv[2]), 'a+') as f:
-        writer = csv.writer(f)
-        writer.writerow(result)
-    output_string = ",".join(result)
+        print(output_string, file=f)
+        # writer = csv.writer(f)
+        # writer.writerow(result)
+    # output_string = ",".join(result)
     print(output_string)
-    return output_string
+    # return output_string
+    logging.info('success:' + output_string)
 
 
 if __name__ == '__main__':
@@ -149,4 +224,7 @@ if __name__ == '__main__':
         sys.exit('Please type the correct args: client_number workload_type')
     client_number = sys.argv[1]
     workload_type = sys.argv[2]
-    main(client_number, workload_type)
+    try:
+        execute_client(client_number, workload_type)
+    except:
+        logging.error('error' + client_number + workload_type)
