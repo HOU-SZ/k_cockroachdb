@@ -28,10 +28,12 @@ def execute_client(client_number, workload_type):
         # sslkey='..\..\..\Softwares\cockroach\certs\client.root.key',
         # sslcert='..\..\..\Softwares\cockroach\certs\client.root.crt',
         port=26257,
-        host='localhost'
+        host='localhost',
+        autoconnect=False
     )
 
     database.initialize(cockroach_db)
+    database.connect()
 
     # input_data = sys.stdin.readlines()
     path = '/temp/cs5424_team_k/project_files_4/xact_files_' + \
@@ -73,9 +75,11 @@ def execute_client(client_number, workload_type):
                     transaction = NewOrderTransaction(
                         (w_id, d_id, c_id), num_items, item_number, supplier_warehouse, quantity)
                     transaction.execute()
-                except:
+                    logging.info(str(line))
+                except Exception as e:
                     print('error'+str(line))
                     logging.error(str(line))
+                    logging.error(e)
                 finally:
                     latency_list.append(time.time() - start_time)
 
@@ -88,9 +92,11 @@ def execute_client(client_number, workload_type):
                     transaction = PaymentTransaction(
                         (c_w_id, c_d_id, c_id), payment_num)
                     transaction.execute()
-                except:
+                    logging.info(str(line))
+                except Exception as e:
                     print('error'+str(line))
                     logging.error(str(line))
+                    logging.error(e)
                 finally:
                     latency_list.append(time.time() - start_time)
                 # transaction = PaymentTransaction(
@@ -103,9 +109,11 @@ def execute_client(client_number, workload_type):
                 try:
                     transaction = DeliveryTransaction(w_id, carrier_id)
                     transaction.execute()
-                except:
+                    logging.info(str(line))
+                except Exception as e:
                     print('error'+str(line))
                     logging.error(str(line))
+                    logging.error(e)
                 finally:
                     latency_list.append(time.time() - start_time)
                 # transaction = DeliveryTransaction(w_id, carrier_id)
@@ -119,9 +127,11 @@ def execute_client(client_number, workload_type):
                     transaction = OrderStatusTransaction(
                         (c_w_id, c_d_id, c_id))
                     transaction.execute()
-                except:
+                    logging.info(str(line))
+                except Exception as e:
                     print('error'+str(line))
                     logging.error(str(line))
+                    logging.error(e)
                 finally:
                     latency_list.append(time.time() - start_time)
                 # transaction = OrderStatusTransaction((c_w_id, c_d_id, c_id))
@@ -135,9 +145,11 @@ def execute_client(client_number, workload_type):
                 try:
                     transaction = StockLevelTransaction(w_id, d_id, t, limit)
                     transaction.execute()
-                except:
+                    logging.info(str(line))
+                except Exception as e:
                     print('error'+str(line))
                     logging.error(str(line))
+                    logging.error(e)
                 finally:
                     latency_list.append(time.time() - start_time)
                 # transaction = StockLevelTransaction(w_id, d_id, t, limit)
@@ -150,9 +162,11 @@ def execute_client(client_number, workload_type):
                 try:
                     transaction = PopularItemTransaction(w_id, d_id, limit)
                     transaction.execute()
-                except:
+                    logging.info(str(line))
+                except Exception as e:
                     print('error'+str(line))
                     logging.error(str(line))
+                    logging.error(e)
                 finally:
                     latency_list.append(time.time() - start_time)
                 # transaction = PopularItemTransaction(w_id, d_id, limit)
@@ -162,9 +176,11 @@ def execute_client(client_number, workload_type):
                 try:
                     transaction = TopBanlanceTransaction()
                     transaction.execute()
-                except:
+                    logging.info(str(line))
+                except Exception as e:
                     print('error'+str(line))
                     logging.error(str(line))
+                    logging.error(e)
                 finally:
                     latency_list.append(time.time() - start_time)
                 # transaction = TopBanlanceTransaction()
@@ -178,9 +194,11 @@ def execute_client(client_number, workload_type):
                     transaction = RelatedCustomerTransaction(
                         (c_w_id, c_d_id, c_id))
                     transaction.execute()
-                except:
+                    logging.info(str(line))
+                except Exception as e:
                     print('error'+str(line))
                     logging.error(str(line))
+                    logging.error(e)
                 finally:
                     latency_list.append(time.time() - start_time)
                 # transaction = RelatedCustomerTransaction(
