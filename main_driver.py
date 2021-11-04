@@ -6,6 +6,7 @@ from playhouse.cockroachdb import CockroachDatabase, DatabaseProxy
 from decimal import Decimal
 from datetime import datetime
 import logging
+import traceback
 
 from models import *
 from transactions import *
@@ -34,9 +35,9 @@ def execute_client(client_number, workload_type):
 
         database.initialize(cockroach_db)
         database.connect()
-    except Exception as e:
-        print('Error database connect: ' + e)
-        logging.error('Database connection: ' + e)
+    except:
+        print('Error database connect')
+        logging.error('Database connection: ' + traceback.format_exc())
 
     # input_data = sys.stdin.readlines()
     path = '/temp/cs5424_team_k/project_files_4/xact_files_' + \
@@ -80,9 +81,9 @@ def execute_client(client_number, workload_type):
                             (w_id, d_id, c_id), num_items, item_number, supplier_warehouse, quantity)
                         transaction.execute()
                         logging.info(str(line))
-                    except Exception as e:
-                        print("Error transaction: " + str(line) + " [DETAILS] " + e)
-                        logging.error("Transaction execute: " + str(line) + " [DETAILS] " + e)
+                    except:
+                        print("Error transaction: " + str(line))
+                        logging.error("Transaction execute: " + str(line) + " [DETAILS] " + traceback.format_exc())
                     finally:
                         latency_list.append(time.time() - start_time)
 
@@ -96,9 +97,9 @@ def execute_client(client_number, workload_type):
                             (c_w_id, c_d_id, c_id), payment_num)
                         transaction.execute()
                         logging.info(str(line))
-                    except Exception as e:
-                        print("Error transaction: " + str(line) + " [DETAILS] " + e)
-                        logging.error("Transaction execute: " + str(line) + " [DETAILS] " + e)
+                    except:
+                        print("Error transaction: " + str(line))
+                        logging.error("Transaction execute: " + str(line) + " [DETAILS] " + traceback.format_exc())
                     finally:
                         latency_list.append(time.time() - start_time)
                     # transaction = PaymentTransaction(
@@ -112,9 +113,9 @@ def execute_client(client_number, workload_type):
                         transaction = DeliveryTransaction(w_id, carrier_id)
                         transaction.execute()
                         logging.info(str(line))
-                    except Exception as e:
-                        print("Error transaction: " + str(line) + " [DETAILS] " + e)
-                        logging.error("Transaction execute: " + str(line) + " [DETAILS] " + e)
+                    except:
+                        print("Error transaction: " + str(line))
+                        logging.error("Transaction execute: " + str(line) + " [DETAILS] " + traceback.format_exc())
                     finally:
                         latency_list.append(time.time() - start_time)
                     # transaction = DeliveryTransaction(w_id, carrier_id)
@@ -129,9 +130,9 @@ def execute_client(client_number, workload_type):
                             (c_w_id, c_d_id, c_id))
                         transaction.execute()
                         logging.info(str(line))
-                    except Exception as e:
-                        print("Error transaction: " + str(line) + " [DETAILS] " + e)
-                        logging.error("Transaction execute: " + str(line) + " [DETAILS] " + e)
+                    except:
+                        print("Error transaction: " + str(line))
+                        logging.error("Transaction execute: " + str(line) + " [DETAILS] " + traceback.format_exc())
                     finally:
                         latency_list.append(time.time() - start_time)
                     # transaction = OrderStatusTransaction((c_w_id, c_d_id, c_id))
@@ -146,9 +147,9 @@ def execute_client(client_number, workload_type):
                         transaction = StockLevelTransaction(w_id, d_id, t, limit)
                         transaction.execute()
                         logging.info(str(line))
-                    except Exception as e:
-                        print("Error transaction: " + str(line) + " [DETAILS] " + e)
-                        logging.error("Transaction execute: " + str(line) + " [DETAILS] " + e)
+                    except:
+                        print("Error transaction: " + str(line))
+                        logging.error("Transaction execute: " + str(line) + " [DETAILS] " + traceback.format_exc())
                     finally:
                         latency_list.append(time.time() - start_time)
                     # transaction = StockLevelTransaction(w_id, d_id, t, limit)
@@ -162,9 +163,9 @@ def execute_client(client_number, workload_type):
                         transaction = PopularItemTransaction(w_id, d_id, limit)
                         transaction.execute()
                         logging.info(str(line))
-                    except Exception as e:
-                        print("Error transaction: " + str(line) + " [DETAILS] " + e)
-                        logging.error("Transaction execute: " + str(line) + " [DETAILS] " + e)
+                    except:
+                        print("Error transaction: " + str(line))
+                        logging.error("Transaction execute: " + str(line) + " [DETAILS] " + traceback.format_exc())
                     finally:
                         latency_list.append(time.time() - start_time)
                     # transaction = PopularItemTransaction(w_id, d_id, limit)
@@ -175,9 +176,9 @@ def execute_client(client_number, workload_type):
                         transaction = TopBanlanceTransaction()
                         transaction.execute()
                         logging.info(str(line))
-                    except Exception as e:
-                        print("Error transaction: " + str(line) + " [DETAILS] " + e)
-                        logging.error("Transaction execute: " + str(line) + " [DETAILS] " + e)
+                    except:
+                        print("Error transaction: " + str(line))
+                        logging.error("Transaction execute: " + str(line) + " [DETAILS] " + traceback.format_exc())
                     finally:
                         latency_list.append(time.time() - start_time)
                     # transaction = TopBanlanceTransaction()
@@ -192,9 +193,9 @@ def execute_client(client_number, workload_type):
                             (c_w_id, c_d_id, c_id))
                         transaction.execute()
                         logging.info(str(line))
-                    except Exception as e:
-                        print("Error transaction: " + str(line) + " [DETAILS] " + e)
-                        logging.error("Transaction execute: " + str(line) + " [DETAILS] " + e)
+                    except:
+                        print("Error transaction: " + str(line))
+                        logging.error("Transaction execute: " + str(line) + " [DETAILS] " + traceback.format_exc())
                     finally:
                         latency_list.append(time.time() - start_time)
                     # transaction = RelatedCustomerTransaction(
@@ -218,9 +219,9 @@ def execute_client(client_number, workload_type):
 
                 # latency_list.append(time.time() - start_time)
                 # number_of_executed_trans += 1
-    except Exception as e:
-        print('Error xact_file: ' + e)
-        logging.error('Error xact_file: ' + e)
+    except:
+        print('Error xact_file'
+        logging.error('Error xact_file: ' + traceback.format_exc())
 
     # 7 measurements
     try:
@@ -238,9 +239,9 @@ def execute_client(client_number, workload_type):
         print(result)
         output_string = ",".join([str(x) for x in result])
         logging.info("Final result: " + output_string)
-    except Exception as e:
-        print('Error measurement: ' + e)
-        logging.error('Measurement: ' + e)
+    except:
+        print('Error measurement')
+        logging.error('Measurement: ' + traceback.format_exc())
 
     try:
         with open('/temp/cs5424_team_k/cockroach-v21.1.7.linux-amd64/task{}.csv'.format(workload_type), 'a+') as f:
@@ -251,9 +252,9 @@ def execute_client(client_number, workload_type):
         print(output_string)
         # return output_string
         logging.info('success:' + output_string)
-    except Exception as e:
-        print('Error write csv: ' + e)
-        logging.error('Write csv: ' + e)
+    except:
+        print('Error write csv')
+        logging.error('Write csv: ' + traceback.format_exc())
 
 
 if __name__ == '__main__':
@@ -265,4 +266,4 @@ if __name__ == '__main__':
     try:
         execute_client(client_number, workload_type)
     except:
-        logging.error('Execute_client: ' + client_number + workload_type)
+        logging.error('Execute_client: ' + client_number + workload_type + '[DETAILS]' + traceback.format_exc())
