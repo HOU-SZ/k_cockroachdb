@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from models import database
 
 class BaseTransaction(ABC):
-    MAX_ATTEMPTS = 10
+    MAX_ATTEMPTS = 3
 
     def __init__(self):
         pass
@@ -19,7 +19,7 @@ class BaseTransaction(ABC):
     def execute(self, *args, **kwargs):
         def thunk(db_ref):
             return self._execute_transaction(*args, **kwargs)
-        return database.run_transaction(thunk, max_attempts=10)
+        return database.run_transaction(thunk, max_attempts = MAX_ATTEMPTS)
 
     # @database.transaction()
     # def execute(self):
