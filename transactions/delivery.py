@@ -13,7 +13,7 @@ class DeliveryTransaction(BaseTransaction):
     def _execute_transaction(self):
         for i in range(1, 11):
             try:
-                order = Order.select(Order.id).where(
+                order = Order.select(Order.id, Order.c_id).where(
                     Order.w_id == self.__w_id,
                     Order.d_id == i,
                     Order.carrier_id.is_null()
@@ -33,9 +33,9 @@ class DeliveryTransaction(BaseTransaction):
 
             # update order
             Order.update(carrier_id = self.__carrier_id).where(
-                Order.id == order.id,
-                Order.w_id == order.w_id,
-                Order.d_id == order_id
+                Order.id == order_id,
+                Order.w_id == self.__w_id,
+                Order.d_id == i
             ).execute()
 
             # update orderline

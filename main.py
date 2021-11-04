@@ -7,7 +7,7 @@ from models import *
 from transactions import *
 
 cockroach_db = CockroachDatabase(
-    database='supplier',
+    database='wholesale',
     user='root',
     sslmode='require',
     sslrootcert='..\..\..\Softwares\cockroach\certs\ca.crt',
@@ -33,12 +33,12 @@ start_time = time.time()
 # payment.execute()
 
 # test DeliveryTransaction
-# delivery = DeliveryTransaction(1, 5)
-# delivery.execute()
+delivery = DeliveryTransaction(2, 5)
+delivery.execute()
 
 # test OrderStatusTransaction
-order_status = OrderStatusTransaction((1,1,1))
-order_status.execute()
+# order_status = OrderStatusTransaction((1,1,1))
+# order_status.execute()
 
 # test StockLevelTransaction
 # stock_level = StockLevelTransaction(1, 1, 50, 5)
