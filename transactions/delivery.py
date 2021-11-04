@@ -18,10 +18,10 @@ class DeliveryTransaction(BaseTransaction):
                     Order.d_id == i,
                     Order.carrier_id.is_null()
                 ).order_by(Order.id).limit(1).get()
-            except order.DoesNotExist:
+                order_id = order.id
+                order_c_id = order.c_id
+            except Order.DoesNotExist:
                 continue
-
-            order_id = order.id
             
             order_line = Orderline.select(
                 fn.SUM(Orderline.amount).alias("total_amount")
@@ -50,7 +50,7 @@ class DeliveryTransaction(BaseTransaction):
                 balance = Customer.balance + order_line.total_amount, 
                 delivery_cnt = Customer.delivery_cnt + 1
             ).where(
-                Customer.id == order.c_id,
+                Customer.id == order_c_id,
                 Customer.w_id == self.__w_id,
                 Customer.d_id == i
             ).execute()

@@ -220,7 +220,7 @@ def execute_client(client_number, workload_type):
                 # latency_list.append(time.time() - start_time)
                 # number_of_executed_trans += 1
     except:
-        print('Error xact_file'
+        print('Error xact_file')
         logging.error('Error xact_file: ' + traceback.format_exc())
 
     # 7 measurements
