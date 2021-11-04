@@ -53,11 +53,17 @@
   unzip -o -d . project_files_4.zip
   ```
 
-  
+
+
+
 
 ## 2. Get Started
 
 ### ① Start Cluster
+
+> If you want to kill all the cockroach process, run `pkill cockroach` 
+>
+> If you want to kill the certain process, run `kill -9 <PID>` 
 
 * Node 1(xcnc30)
 
@@ -98,9 +104,11 @@
 
 ### ② Init Cluster
 
-* Node 1(xcnc30)
+> You can init cluster on any node among 1 to 5, the following example is on node1 (xcnc30)
+>
+> If the cluster has already been initialized, you can skip this step. The above `cockroach start` command can help you restart the cluster.
 
-  > Any node among 1 to 5 is ok
+* Node 1(xcnc30)
 
   ```sh
   cd /temp/cs5424_team_k/cockroach-v21.1.7.linux-amd64
@@ -133,25 +141,27 @@
 
 
 
+
+
 ## 3. Load data into Database
 
-### ① Preparation
+* Preparation
 
-```sh
-### ssh cs4224k@xcnc.comp.nus.edu.sg
-cd /temp/cs5424_team_k/cockroach-v21.1.7.linux-amd64
-mkdir cockroach-data/extern
-cp ../project_files_4/data_files/* ./cockroach-data/extern/
-```
+  ```sh
+  ### ssh cs4224k@xcnc.comp.nus.edu.sg
+  cd /temp/cs5424_team_k/cockroach-v21.1.7.linux-amd64
+  mkdir cockroach-data/extern
+  cp ../project_files_4/data_files/* ./cockroach-data/extern/
+  ```
+
+* Init Database & Load data
+
+  ```sh
+  cd /temp/cs5424_team_k/cockroach-v21.1.7.linux-amd64
+  ./cockroach sql --insecure --host=xcnc30.comp.nus.edu.sg:26257 --file ./CS5424_Project_CockroachDB/db_init.sql
+  ```
 
 
-
-### ② Init Database & Load data
-
-```sh
-cd /temp/cs5424_team_k/cockroach-v21.1.7.linux-amd64
-./cockroach sql --insecure --host=xcnc30.comp.nus.edu.sg:26257 --file ./CS5424_Project_CockroachDB/db_init.sql
-```
 
 
 
