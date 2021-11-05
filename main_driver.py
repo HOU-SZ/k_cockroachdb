@@ -44,8 +44,8 @@ def execute_client(client_number, workload_type):
         workload_type.upper() + '/' + client_number + '.txt'
     latency_list = []
     number_of_executed_trans = 0
-    l = 0
 
+    # record fail transactions
     counter = 0
 
     def extract(one_string):
@@ -82,6 +82,7 @@ def execute_client(client_number, workload_type):
                         transaction.execute()
                         logging.info(str(line))
                     except:
+                        counter += 1
                         print("Error transaction: " + str(line))
                         logging.error("Transaction execute: " + str(line) + " [DETAILS] " + traceback.format_exc())
                     finally:
@@ -98,6 +99,7 @@ def execute_client(client_number, workload_type):
                         transaction.execute()
                         logging.info(str(line))
                     except:
+                        counter += 1
                         print("Error transaction: " + str(line))
                         logging.error("Transaction execute: " + str(line) + " [DETAILS] " + traceback.format_exc())
                     finally:
@@ -114,6 +116,7 @@ def execute_client(client_number, workload_type):
                         transaction.execute()
                         logging.info(str(line))
                     except:
+                        counter += 1
                         print("Error transaction: " + str(line))
                         logging.error("Transaction execute: " + str(line) + " [DETAILS] " + traceback.format_exc())
                     finally:
@@ -131,6 +134,7 @@ def execute_client(client_number, workload_type):
                         transaction.execute()
                         logging.info(str(line))
                     except:
+                        counter += 1
                         print("Error transaction: " + str(line))
                         logging.error("Transaction execute: " + str(line) + " [DETAILS] " + traceback.format_exc())
                     finally:
@@ -148,6 +152,7 @@ def execute_client(client_number, workload_type):
                         transaction.execute()
                         logging.info(str(line))
                     except:
+                        counter += 1
                         print("Error transaction: " + str(line))
                         logging.error("Transaction execute: " + str(line) + " [DETAILS] " + traceback.format_exc())
                     finally:
@@ -164,6 +169,7 @@ def execute_client(client_number, workload_type):
                         transaction.execute()
                         logging.info(str(line))
                     except:
+                        counter += 1
                         print("Error transaction: " + str(line))
                         logging.error("Transaction execute: " + str(line) + " [DETAILS] " + traceback.format_exc())
                     finally:
@@ -177,6 +183,7 @@ def execute_client(client_number, workload_type):
                         transaction.execute()
                         logging.info(str(line))
                     except:
+                        counter += 1
                         print("Error transaction: " + str(line))
                         logging.error("Transaction execute: " + str(line) + " [DETAILS] " + traceback.format_exc())
                     finally:
@@ -194,6 +201,7 @@ def execute_client(client_number, workload_type):
                         transaction.execute()
                         logging.info(str(line))
                     except:
+                        counter += 1
                         print("Error transaction: " + str(line))
                         logging.error("Transaction execute: " + str(line) + " [DETAILS] " + traceback.format_exc())
                     finally:
@@ -225,7 +233,7 @@ def execute_client(client_number, workload_type):
 
     # 7 measurements
     try:
-        number_of_executed_trans = len(latency_list)
+        number_of_executed_trans = len(latency_list) - counter
         latency_array = np.array(latency_list)
         total_latency = np.sum(latency_array)  # sec
         throughput = number_of_executed_trans / total_latency
