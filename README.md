@@ -183,31 +183,33 @@
 
   ```sh
   cd CS5424_Project_CockroachDB
+  ./entry.sh <task_type> <user_name> <hostname_1> <hostname_2> <hostname_3> <hostname_4> <hostname_5>
   ### run workload A
-  sh entry.sh A
+  ./entry.sh A cs4224k xcnc30.comp.nus.edu.sg xcnc31.comp.nus.edu.sg xcnc32.comp.nus.edu.sg xcnc33.comp.nus.edu.sg xcnc34.comp.nus.edu.sg
   ### run workload B
-  sh entry.sh A
+  ./entry.sh B cs4224k xcnc30.comp.nus.edu.sg xcnc31.comp.nus.edu.sg xcnc32.comp.nus.edu.sg xcnc33.comp.nus.edu.sg xcnc34.comp.nus.edu.sg
   ```
 
   *  Or run manual (run the following commands on 5 servers)
 
   ```sh
   cd /temp/cs5424_team_k/cockroach-v21.1.7.linux-amd64/CS5424_Project_CockroachDB
+  sh runpy.sh <task_type> <hostname>
   ### on server node 1
-  sh runpy.sh 0 A
-  sh runpy.sh 0 B
+  sh runpy.sh 0 A xcnc30.comp.nus.edu.sg
+  sh runpy.sh 0 B xcnc30.comp.nus.edu.sg
   ### on server node 2
-  sh runpy.sh 1 A
-  sh runpy.sh 1 B
+  sh runpy.sh 1 A xcnc31.comp.nus.edu.sg
+  sh runpy.sh 1 B xcnc31.comp.nus.edu.sg
   ### on server node 3
-  sh runpy.sh 2 A
-  sh runpy.sh 2 B
+  sh runpy.sh 2 A xcnc32.comp.nus.edu.sg
+  sh runpy.sh 2 B xcnc32.comp.nus.edu.sg
   ### on server node 4
-  sh runpy.sh 3 A
-  sh runpy.sh 3 B
+  sh runpy.sh 3 A xcnc33.comp.nus.edu.sg
+  sh runpy.sh 3 B xcnc33.comp.nus.edu.sg
   ### on server node 5
-  sh runpy.sh 4 A
-  sh runpy.sh 4 B
+  sh runpy.sh 4 A xcnc34.comp.nus.edu.sg
+  sh runpy.sh 4 B xcnc34.comp.nus.edu.sg
   ```
 
 * Get statistics csv file

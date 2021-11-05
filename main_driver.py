@@ -18,7 +18,7 @@ logging.basicConfig(filename='/temp/cs5424_team_k/cockroach-v21.1.7.linux-amd64/
                     level=logging.INFO, filemode='a')
 
 
-def execute_client(client_number, workload_type):
+def execute_client(client_number, workload_type, hostname):
     try:
         cockroach_db = CockroachDatabase(
             database='wholesale',
@@ -29,7 +29,7 @@ def execute_client(client_number, workload_type):
             # sslkey='..\..\..\Softwares\cockroach\certs\client.root.key',
             # sslcert='..\..\..\Softwares\cockroach\certs\client.root.crt',
             port=26257,
-            host='xcnc30.comp.nus.edu.sg',
+            host=str(hostname),
             autoconnect=False
         )
 
