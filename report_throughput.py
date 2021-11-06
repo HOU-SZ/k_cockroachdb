@@ -4,7 +4,7 @@ import sys
 
 def main(workload_type):
     throughputs = []
-    with open('output/dbstate.csv') as f:
+    with open('/temp/cs5424_team_k/cockroach-v21.1.7.linux-amd64/output/clients.csv') as f:
         f_csv = csv.reader(f)
 
         for row in f_csv:
@@ -17,7 +17,7 @@ def main(workload_type):
     result = [min_throughput, max_throughput, avg_throughput]
     print(result)
     output_string = ",".join([str(x) for x in result])
-    with open('output/throughputs_{}.csv'.format(workload_type), 'a') as f:
+    with open('/temp/cs5424_team_k/cockroach-v21.1.7.linux-amd64/output/throughputs_{}.csv'.format(workload_type), 'a') as f:
         print(output_string, file=f)
 
 

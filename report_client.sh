@@ -5,7 +5,7 @@ hostname_list=($3 $4 $5 $6 $7)
 
 for n in $(seq 0 4)
 do
-    ssh $username@${hostname_list[$n]} "cat /temp/cs5424_team_k/cockroach-v21.1.7.linux-amd64/task${task_type}.csv" >> result.csv
+    ssh $username@${hostname_list[$n]} "cat /temp/cs5424_team_k/cockroach-v21.1.7.linux-amd64/task${task_type}.csv" >> client.csv
 done
 
 wait

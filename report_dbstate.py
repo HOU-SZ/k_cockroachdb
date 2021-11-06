@@ -1,47 +1,24 @@
 from peewee import *
-from playhouse.cockroachdb import CockroachDatabase, DatabaseProxy
-from decimal import Decimal
-from datetime import datetime
-import time
+from playhouse.cockroachdb import CockroachDatabase
+import sys
 
 from models import *
 from transactions import *
 
 
-def final_state():
+def final_state(hostname):
 
     cockroach_db = CockroachDatabase(
         database='wholesale',
         user='root',
-        # sslmode='disable',
-        sslmode='require',
-        sslrootcert='..\..\..\Softwares\cockroach\certs\ca.crt',
-        sslkey='..\..\..\Softwares\cockroach\certs\client.root.key',
-        sslcert='..\..\..\Softwares\cockroach\certs\client.root.crt',
+        sslmode='disable',
         port=26257,
-        # host='xcnc30.comp.nus.edu.sg',
-        host = 'localhost',
+        host=hostname,
         autoconnect=False
     )
 
     database.initialize(cockroach_db)
     database.connect()
-
-    # w_ytd = Warehouse.select(fn.SUM(Warehouse.ytd))
-    # d_ytd = District.select(fn.SUM(District.ytd))
-    # d_next_o_id = District.select(fn.SUM(District.next_o_id))
-    # c_balance = Customer.select(fn.SUM(Customer.balance))
-    # c_ytd_payment = Customer.select(fn.SUM(Customer.ytd_payment))
-    # c_payment_cnt = Customer.select(fn.SUM(Customer.payment_cnt))
-    # c_delivery_cnt = Customer.select(fn.SUM(Customer.delivery_cnt))
-    # o_id = Order.select(fn.MAX(Order.id))
-    # o_ol_cnt = Order.select(fn.SUM(Order.ol_cnt))
-    # ol_amount = Orderline.select(fn.SUM(Orderline.amount))
-    # ol_quantity = Orderline.select(fn.SUM(Orderline.quantity))
-    # s_quantity = Stock.select(fn.SUM(Stock.quantity))
-    # s_ytd = Stock.select(fn.SUM(Stock.ytd))
-    # s_order_cnt = Stock.select(fn.SUM(Stock.order_cnt))
-    # s_remote_cnt = Stock.select(fn.SUM(Stock.remote_cnt))
 
     warehouse = Warehouse.select(fn.SUM(Warehouse.ytd))
     
@@ -84,10 +61,11 @@ def final_state():
 
 
     
-    with open('output/dbstate.csv', 'a+') as f:
+    with open('/temp/cs5424_team_k/cockroach-v21.1.7.linux-amd64/output/dbstate.csv', 'a+') as f:
         for metric in output:
             print(metric, file=f)
 
 
 if __name__ == '__main__':
-    final_state()
+    hostname = sys.argv[1]
+    final_state(hostname)

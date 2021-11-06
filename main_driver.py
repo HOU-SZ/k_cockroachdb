@@ -2,7 +2,7 @@ import sys
 import time
 import csv
 import numpy as np
-from playhouse.cockroachdb import CockroachDatabase, DatabaseProxy
+from playhouse.cockroachdb import CockroachDatabase
 from decimal import Decimal
 from datetime import datetime
 import logging
@@ -12,7 +12,6 @@ from models import *
 from transactions import *
 
 import time
-import threading
 
 logging.basicConfig(filename='/temp/cs5424_team_k/cockroach-v21.1.7.linux-amd64/task.log',
                     level=logging.INFO, filemode='a')
@@ -24,10 +23,6 @@ def execute_client(client_number, workload_type, hostname):
             database='wholesale',
             user='root',
             sslmode='disable',
-            # sslmode='require',
-            # sslrootcert='..\..\..\Softwares\cockroach\certs\ca.crt',
-            # sslkey='..\..\..\Softwares\cockroach\certs\client.root.key',
-            # sslcert='..\..\..\Softwares\cockroach\certs\client.root.crt',
             port=26257,
             host=str(hostname),
             autoconnect=False
@@ -106,9 +101,6 @@ def execute_client(client_number, workload_type, hostname):
                             "Transaction execute: " + str(line) + " [DETAILS] " + traceback.format_exc())
                     finally:
                         latency_list.append(time.time() - start_time)
-                    # transaction = PaymentTransaction(
-                    #     (c_w_id, c_d_id, c_id), payment_num)
-                    # transaction.execute()
 
                 elif x_type == "D":
                     w_id = int(line[1])
@@ -124,8 +116,6 @@ def execute_client(client_number, workload_type, hostname):
                             "Transaction execute: " + str(line) + " [DETAILS] " + traceback.format_exc())
                     finally:
                         latency_list.append(time.time() - start_time)
-                    # transaction = DeliveryTransaction(w_id, carrier_id)
-                    # transaction.execute()
 
                 elif x_type == "O":
                     c_w_id = int(line[1])
@@ -143,8 +133,6 @@ def execute_client(client_number, workload_type, hostname):
                             "Transaction execute: " + str(line) + " [DETAILS] " + traceback.format_exc())
                     finally:
                         latency_list.append(time.time() - start_time)
-                    # transaction = OrderStatusTransaction((c_w_id, c_d_id, c_id))
-                    # transaction.execute()
 
                 elif x_type == "S":
                     w_id = int(line[1])
@@ -163,8 +151,6 @@ def execute_client(client_number, workload_type, hostname):
                             "Transaction execute: " + str(line) + " [DETAILS] " + traceback.format_exc())
                     finally:
                         latency_list.append(time.time() - start_time)
-                    # transaction = StockLevelTransaction(w_id, d_id, t, limit)
-                    # transaction.execute()
 
                 elif x_type == "I":
                     w_id = int(line[1])
@@ -181,8 +167,6 @@ def execute_client(client_number, workload_type, hostname):
                             "Transaction execute: " + str(line) + " [DETAILS] " + traceback.format_exc())
                     finally:
                         latency_list.append(time.time() - start_time)
-                    # transaction = PopularItemTransaction(w_id, d_id, limit)
-                    # transaction.execute()
 
                 elif x_type == "T":
                     try:
@@ -196,8 +180,6 @@ def execute_client(client_number, workload_type, hostname):
                             "Transaction execute: " + str(line) + " [DETAILS] " + traceback.format_exc())
                     finally:
                         latency_list.append(time.time() - start_time)
-                    # transaction = TopBanlanceTransaction()
-                    # transaction.execute()
 
                 elif x_type == "R":
                     c_w_id = int(line[1])
@@ -215,9 +197,6 @@ def execute_client(client_number, workload_type, hostname):
                             "Transaction execute: " + str(line) + " [DETAILS] " + traceback.format_exc())
                     finally:
                         latency_list.append(time.time() - start_time)
-                    # transaction = RelatedCustomerTransaction(
-                    #     (c_w_id, c_d_id, c_id))
-                    # transaction.execute()
                 else:
                     print(
                         "Invalid transaction type: %s "
@@ -231,11 +210,6 @@ def execute_client(client_number, workload_type, hostname):
                     )
 
                     continue
-                    # raise Exception(
-                    #     "Invalid transaction type: %s [If you can't see invalid type letter, this means there is one or more empty line(s) in your input.]" % x_type)
-
-                # latency_list.append(time.time() - start_time)
-                # number_of_executed_trans += 1
     except:
         print('Error xact_file')
         logging.error('Error xact_file: ' + traceback.format_exc())
@@ -263,9 +237,6 @@ def execute_client(client_number, workload_type, hostname):
     try:
         with open('/temp/cs5424_team_k/cockroach-v21.1.7.linux-amd64/task{}.csv'.format(workload_type), 'a+') as f:
             print(output_string, file=f)
-            # writer = csv.writer(f)
-            # writer.writerow(result)
-        # output_string = ",".join(result)
         print(output_string)
         # return output_string
         logging.info('success:' + output_string)

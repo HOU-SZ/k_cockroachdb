@@ -7,8 +7,7 @@
   ```sh
   ### for each server
   ssh <user_name>@<hostname>
-
-  ### for example
+  
   ### access server "xcnc30"
   ssh cs4224k@xcnc30.comp.nus.edu.sg
   
@@ -38,8 +37,10 @@
 
 * Copy project code to 5 servers
 
+  > k_cockroachdb.zip is the source code zip, if the name of the source zip is different, please change accordingly. And also please change <user_name> and <hostname_n> accordingly
+
   ```sh
-  ### copy code to 5 servers (k_cockroachdb.zip is the source code zip, if the name of the source zip is different, please change accordingly. And also please change <user_name> and <hostname_1> accordingly)
+  ### copy code to 5 servers
   scp k_cockroachdb.zip <user_name>@<hostname_1>:/temp/cs5424_team_k/cockroach-v21.1.7.linux-amd64
   scp k_cockroachdb.zip <user_name>@<hostname_2>:/temp/cs5424_team_k/cockroach-v21.1.7.linux-amd64
   scp k_cockroachdb.zip <user_name>@<hostname_3>:/temp/cs5424_team_k/cockroach-v21.1.7.linux-amd64
@@ -71,6 +72,8 @@
 > If you want to kill all the cockroach process, run `pkill cockroach` 
 >
 > If you want to kill the certain process, run `kill -9 <PID>` 
+>
+> Please modify <hostname_n> to the real hostname
 
 * Node 1
 
@@ -129,6 +132,7 @@
 * Check cluster info
 
   ```sh
+  cd /temp/cs5424_team_k/cockroach-v21.1.7.linux-amd64
   grep 'cluster' cockroach-data/logs/cockroach.log -A 11
   ```
 
@@ -136,14 +140,14 @@
 
   ```sh
   cd /temp/cs5424_team_k/cockroach-v21.1.7.linux-amd64
-  ./cockroach node status --insecure --host=<hostname_1>:26257
+  ./cockroach node status --insecure --host=<hostname>:26257
   ```
 
 * Check Cockroach database
 
   ```sh
   cd /temp/cs5424_team_k/cockroach-v21.1.7.linux-amd64
-  ./cockroach sql --insecure --host=<hostname_1>:26257
+  ./cockroach sql --insecure --host=<hostname>:26257
   ```
 
 
@@ -155,8 +159,7 @@
 * Preparation
 
   ```sh
-  ### for any one server
-  ### ssh <user_name>@<hostname>
+  ### ssh <user_name>@<hostname_1>
   cd /temp/cs5424_team_k/cockroach-v21.1.7.linux-amd64
   mkdir cockroach-data/extern
   cp ../project_files_4/data_files/* ./cockroach-data/extern/
@@ -165,7 +168,7 @@
 * Init Database & Load data
 
   ```sh
-  ### on the server used in the previous command
+  ### ssh <user_name>@<hostname_1>
   cd /temp/cs5424_team_k/cockroach-v21.1.7.linux-amd64
   ./cockroach sql --insecure --host=<hostname_1>:26257 --file ./k_cockroachdb/db_init.sql
   ```
@@ -191,7 +194,7 @@
   * Run script on local machine
 
   ```sh
-  cd k_cockroachdb
+  cd /temp/cs5424_team_k/cockroach-v21.1.7.linux-amd64/k_cockroachdb
   ./entry.sh <task_type> <user_name> <hostname_1> <hostname_2> <hostname_3> <hostname_4> <hostname_5>
   ### for example
   ### run workload A
@@ -228,13 +231,21 @@
 
   ```sh
   cd /temp/cs5424_team_k/cockroach-v21.1.7.linux-amd64/k_cockroachdb
+  
   ### get client.csv
+  ./report_client.sh <task_type> <user_name> <hostname_1> <hostname_2> <hostname_3> <hostname_4> <hostname_5>
+  ### for example: task A
   ./report_client.sh A <user_name> <hostname_1> <hostname_2> <hostname_3> <hostname_4> <hostname_5>
-  ./report_client.sh B <user_name> <hostname_1> <hostname_2> <hostname_3> <hostname_4> <hostname_5>
+  
   ### get dbstate.csv
-  python3 report_dbstate.py
+  python3 report_dbstate.py <hostname>
+  ### for example
+  python3 report_dbstate.py xcnc30.comp.nus.edu.sg
+  
   ### get throughput.csv
   python3 report_throughput.py <task_type>
+  ### for example
+  python3 report_throughput.py A
   ```
 
   
