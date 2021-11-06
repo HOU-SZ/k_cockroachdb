@@ -84,7 +84,8 @@ def execute_client(client_number, workload_type, hostname):
                     except:
                         counter += 1
                         print("Error transaction: " + str(line))
-                        logging.error("Transaction execute: " + str(line) + " [DETAILS] " + traceback.format_exc())
+                        logging.error(
+                            "Transaction execute: " + str(line) + " [DETAILS] " + traceback.format_exc())
                     finally:
                         latency_list.append(time.time() - start_time)
 
@@ -101,7 +102,8 @@ def execute_client(client_number, workload_type, hostname):
                     except:
                         counter += 1
                         print("Error transaction: " + str(line))
-                        logging.error("Transaction execute: " + str(line) + " [DETAILS] " + traceback.format_exc())
+                        logging.error(
+                            "Transaction execute: " + str(line) + " [DETAILS] " + traceback.format_exc())
                     finally:
                         latency_list.append(time.time() - start_time)
                     # transaction = PaymentTransaction(
@@ -118,7 +120,8 @@ def execute_client(client_number, workload_type, hostname):
                     except:
                         counter += 1
                         print("Error transaction: " + str(line))
-                        logging.error("Transaction execute: " + str(line) + " [DETAILS] " + traceback.format_exc())
+                        logging.error(
+                            "Transaction execute: " + str(line) + " [DETAILS] " + traceback.format_exc())
                     finally:
                         latency_list.append(time.time() - start_time)
                     # transaction = DeliveryTransaction(w_id, carrier_id)
@@ -136,7 +139,8 @@ def execute_client(client_number, workload_type, hostname):
                     except:
                         counter += 1
                         print("Error transaction: " + str(line))
-                        logging.error("Transaction execute: " + str(line) + " [DETAILS] " + traceback.format_exc())
+                        logging.error(
+                            "Transaction execute: " + str(line) + " [DETAILS] " + traceback.format_exc())
                     finally:
                         latency_list.append(time.time() - start_time)
                     # transaction = OrderStatusTransaction((c_w_id, c_d_id, c_id))
@@ -148,13 +152,15 @@ def execute_client(client_number, workload_type, hostname):
                     t = int(line[3])
                     limit = int(line[4])
                     try:
-                        transaction = StockLevelTransaction(w_id, d_id, t, limit)
+                        transaction = StockLevelTransaction(
+                            w_id, d_id, t, limit)
                         transaction.execute()
                         logging.info(str(line))
                     except:
                         counter += 1
                         print("Error transaction: " + str(line))
-                        logging.error("Transaction execute: " + str(line) + " [DETAILS] " + traceback.format_exc())
+                        logging.error(
+                            "Transaction execute: " + str(line) + " [DETAILS] " + traceback.format_exc())
                     finally:
                         latency_list.append(time.time() - start_time)
                     # transaction = StockLevelTransaction(w_id, d_id, t, limit)
@@ -171,7 +177,8 @@ def execute_client(client_number, workload_type, hostname):
                     except:
                         counter += 1
                         print("Error transaction: " + str(line))
-                        logging.error("Transaction execute: " + str(line) + " [DETAILS] " + traceback.format_exc())
+                        logging.error(
+                            "Transaction execute: " + str(line) + " [DETAILS] " + traceback.format_exc())
                     finally:
                         latency_list.append(time.time() - start_time)
                     # transaction = PopularItemTransaction(w_id, d_id, limit)
@@ -185,7 +192,8 @@ def execute_client(client_number, workload_type, hostname):
                     except:
                         counter += 1
                         print("Error transaction: " + str(line))
-                        logging.error("Transaction execute: " + str(line) + " [DETAILS] " + traceback.format_exc())
+                        logging.error(
+                            "Transaction execute: " + str(line) + " [DETAILS] " + traceback.format_exc())
                     finally:
                         latency_list.append(time.time() - start_time)
                     # transaction = TopBanlanceTransaction()
@@ -203,7 +211,8 @@ def execute_client(client_number, workload_type, hostname):
                     except:
                         counter += 1
                         print("Error transaction: " + str(line))
-                        logging.error("Transaction execute: " + str(line) + " [DETAILS] " + traceback.format_exc())
+                        logging.error(
+                            "Transaction execute: " + str(line) + " [DETAILS] " + traceback.format_exc())
                     finally:
                         latency_list.append(time.time() - start_time)
                     # transaction = RelatedCustomerTransaction(
@@ -220,7 +229,7 @@ def execute_client(client_number, workload_type, hostname):
                         "[If you can't see invalid type letter, "
                         "this means there is one or more empty line(s) in your input.]" % x_type
                     )
-                    
+
                     continue
                     # raise Exception(
                     #     "Invalid transaction type: %s [If you can't see invalid type letter, this means there is one or more empty line(s) in your input.]" % x_type)
@@ -243,7 +252,7 @@ def execute_client(client_number, workload_type, hostname):
         percentile_99 = np.percentile(latency_array, 99) * 1000
 
         result = [client_number, number_of_executed_trans, total_latency,
-                throughput, avr_latency, median_latency, percentile_95, percentile_99]
+                  throughput, avr_latency, median_latency, percentile_95, percentile_99]
         print(result)
         output_string = ",".join([str(x) for x in result])
         logging.info("Final result: " + output_string)
@@ -271,7 +280,9 @@ if __name__ == '__main__':
         sys.exit('Please type the correct args: client_number workload_type')
     client_number = sys.argv[1]
     workload_type = sys.argv[2]
+    host_name = sys.argv[3]
     try:
-        execute_client(client_number, workload_type)
+        execute_client(client_number, workload_type, host_name)
     except:
-        logging.error('Execute_client: ' + client_number + workload_type + '[DETAILS]' + traceback.format_exc())
+        logging.error('Execute_client: ' + client_number +
+                      workload_type + '[DETAILS]' + traceback.format_exc())

@@ -6,9 +6,8 @@ for n in $(seq 0 4)
 do
 {
     server_num=$n
+    sshpass -p "123456" ssh $username@${hostname_list[$n]} "sh /temp/cs5424_team_k/cockroach-v21.1.7.linux-amd64/CS5424_Project_CockroachDB/runpy.sh $server_num $task_type"
     echo "Server $username@${hostname_list[$n]} starts..."
-    # sshpass -p "123456" ssh $username@${hostname_list[$n]} "sh /temp/cs5424_team_k/cockroach-v21.1.7.linux-amd64/CS5424_Project_CockroachDB/runpy.sh $server_num $task_type"
-    echo "Server $username@${hostname_list[$n]} ends..."
 } &
 done
 
