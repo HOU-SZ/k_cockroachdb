@@ -57,7 +57,7 @@
   ```sh
   ### for each server
   cd /temp/cs5424_team_k
-  wget http://www.comp.nus.edu.sg/~<user_name>/project_files_4.zip
+  wget http://www.comp.nus.edu.sg/~cs4224/project_files_4.zip
   unzip -o -d . project_files_4.zip
   ```
 
